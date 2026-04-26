@@ -1975,7 +1975,6 @@ class CQBTacticalBoard {
             if (el.type === 'wall') return true;
             if (el.type === 'obstacle') return true;
             if (el.type === 'door') return true;
-            if (el.type === 'window') return true;
             if (el.type === 'stairs') return true;
             return false;
         });
@@ -2930,3 +2929,4 @@ class CQBTacticalBoard {
 document.addEventListener('DOMContentLoaded', () => {
     window.tacticalBoard = new CQBTacticalBoard();
 });
+
