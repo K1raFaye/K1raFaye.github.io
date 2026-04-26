@@ -1,6 +1,10 @@
 # K1raFaye.github.io
-Ciallo～(∠・ω&lt; )⌒☆
 by KiraFaye
+
+使用方式：访问https://k1rafaye.github.io/
+
+Ciallo～(∠・ω&lt; )⌒☆
+
 技术架构
 前端语言：HTML + CSS + JavaScript（ES6 class）
 
