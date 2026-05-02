@@ -11,7 +11,7 @@
 - **前端语言**：HTML5 + CSS3 + Vanilla JavaScript（ES6 Class）
 - **渲染方式**：Canvas 2D API 自绘一切元素，零第三方依赖
 - **状态管理**：楼层 → 场景 → 元素三级树结构，配合 JSON 快照历史栈实现撤销/重做（50步）
-- **UI 主题**：参考https://github.com/VoltAgent/awesome-design-md的spaceX设计UI（纯黑背景 + 光谱白文字 + 幽灵边框）
+- **UI 主题**：参考 https://github.com/VoltAgent/awesome-design-md 的spaceX设计UI（纯黑背景 + 光谱白文字 + 幽灵边框）
 - **响应式**：桌面端 / 移动端双端适配，媒体查询 + 触控手势
 
 ***
