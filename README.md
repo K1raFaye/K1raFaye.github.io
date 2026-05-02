@@ -4,6 +4,8 @@
 
 > 纯前端战术标图与 CQB 战术规划工具，打开浏览器即可使用。
 
+
+使用方法：访问https://k1rafaye.github.io/
 ## 技术架构
 
 - **前端语言**：HTML5 + CSS3 + Vanilla JavaScript（ES6 Class）
