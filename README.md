@@ -1,5 +1,5 @@
 # CQB Simulator — 室内近距离战斗模拟器
-
+**Ciallo～(∠・ω< )⌒☆**
 **by KiraFaye  |  Ver 2.0**
 
 > 纯前端战术标图与 CQB 战术规划工具，打开浏览器即可使用。
