@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CQB Simulator - 室内近距离战斗模拟</title>
+    <link rel="stylesheet" href="spacex-ui.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧工具栏 -->
+        <div class="toolbar">
+            <h3 class="toolbar-title">CQB Simulator
+                <div> by KiraFaye Ver2.0</div></h3>
+            <button class="mobile-toggle-btn" id="mobileToggleBtn">📱 移动端</button>
+            
+            <!-- 图层/楼层控制 -->
+            <div class="tool-section layer-section">
+                <h4>🏢 楼层管理</h4>
+                <div class="layer-controls">
+                    <button class="layer-btn" id="addLayerBtn" title="添加楼层">+ 新建楼层</button>
+                    <div class="layer-list" id="layerList">
+                        <div class="layer-item active" data-layer="0" data-name="1F 一楼">
+                            <span class="layer-name" title="点击编辑名称">1F 一楼</span>
+                            <div class="layer-actions">
+                                <button class="layer-up" data-action="up" title="上移">▲</button>
+                                <button class="layer-down" data-action="down" title="下移">▼</button>
+                                <button class="layer-delete" data-delete="0">×</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作工具（移到建筑元素之前） -->
+            <div class="tool-section">
+                <h4>操作工具</h4>
+                <button class="tool-btn active" data-tool="select" title="选择/移动">
+                    ✋ 选择
+                </button>
+                <button class="tool-btn" data-tool="delete" title="删除选中">
+                    🗑️ 删除
+                </button>
+                
+                <!-- 实战模式开关 -->
+                <div class="combat-mode-toggle">
+                    <label>
+                        <input type="checkbox" id="combatModeToggle">
+                        实战模式
+                        <span class="combat-hint" id="combatHint">(敌方隐藏)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="tool-section">
+                <h4>建筑元素</h4>
+                <button class="tool-btn" data-tool="wall" title="墙体（矩形）">
+                    🧱 墙体
+                </button>
+                <button class="tool-btn" data-tool="door" title="门（可旋转开合）">
+                    🚪 门
+                </button>
+                <button class="tool-btn" data-tool="window" title="窗户">
+                    🪟 窗户
+                </button>
+                <button class="tool-btn" data-tool="stairs" title="楼梯（连接楼层）">
+                    🪜 楼梯
+                </button>
+                <div class="obstacle-tool-group">
+                    <button class="tool-btn" data-tool="obstacle" title="遮挡物（矩形/圆形）">
+                        🚧 遮挡物
+                    </button>
+                    <select id="obstacleShape" class="obstacle-shape-select">
+                        <option value="rectangle">⬛ 矩形</option>
+                        <option value="circle">⭕ 圆形</option>
+                    </select>
+                </div>
+                
+                <!-- 自动对齐功能 -->
+                <div class="align-toggle">
+                    <label>
+                        <input type="checkbox" id="snapToggle" checked>
+                        🔗 智能对齐
+                    </label>
+                </div>
+            </div>
+
+            <div class="tool-section">
+                <h4>画板工具</h4>
+                <button class="tool-btn" data-tool="draw" title="自由绘制">
+                    ✏️ 画笔
+                </button>
+                <button class="tool-btn" data-tool="draw-rect" title="绘制矩形">
+                    ▭ 矩形
+                </button>
+                <button class="tool-btn" data-tool="draw-circle" title="绘制圆形">
+                    ⭕ 圆形
+                </button>
+                <button class="tool-btn" data-tool="draw-line" title="绘制直线">
+                    📏 直线
+                </button>
+                <div class="draw-tool-group">
+                    <label>颜色:</label>
+                    <input type="color" id="drawColor" value="#000000">
+                    <label>粗细:</label>
+                    <input type="range" id="drawWidth" min="1" max="20" value="2">
+                    <span id="drawWidthValue">2px</span>
+                </div>
+                <div class="draw-actions">
+                    <button class="tool-btn" data-tool="draw-erase-area" title="区域删除">
+                        🗑️ 区域删除
+                    </button>
+                    <button class="tool-btn" id="clearDrawBtn" title="清空画板">
+                        🧹 清空画板
+                    </button>
+                </div>
+            </div>
+
+            <div class="tool-section">
+                <h4>人员单位</h4>
+                <button class="tool-btn" data-tool="operator" title="CQB操作员">
+                    👤 操作员
+                </button>
+                <button class="tool-btn" data-tool="hostile" title="敌对目标">
+                    💀 敌人
+                </button>
+                <button class="tool-btn" data-tool="hostage" title="人质">
+                    🙋 人质
+                </button>
+            </div>
+
+            <div class="tool-section">
+                <h4>视野系统</h4>
+                <div class="align-toggle">
+                    <label>
+                        <input type="checkbox" id="occlusionToggle" checked>
+                        🚫 视野遮挡
+                    </label>
+                </div>
+            </div>
+
+            <div class="tool-section">
+                <h4>视图控制</h4>
+                <button class="tool-btn" id="clearCanvas" title="清空当前楼层">
+                    🧹 清空
+                </button>
+                <button class="tool-btn" id="exportBtn" title="导出图片">
+                    💾 导出
+                </button>
+                <button class="tool-btn active" id="gridToggle" title="显示/隐藏网格">
+                    🔲 网格
+                </button>
+            </div>
+        </div>
+
+        <!-- 主画布区域 -->
+        <div class="canvas-container">
+            <canvas id="tacticalCanvas"></canvas>
+            <div class="coordinates">坐标: <span id="coordsDisplay">0, 0</span></div>
+            
+            <!-- 对齐提示 -->
+            <div class="snap-indicator" id="snapIndicator" style="display: none;">
+                已对齐到: <span id="snapInfo"></span>
+            </div>
+
+            <!-- 实战模式提示 -->
+            <div class="mode-indicator" id="modeIndicator" style="display: none;">
+                实战模式已启用 -execute!execute!execute!
+            </div>
+
+            <!-- 人员信息浮窗 -->
+            <div class="person-tooltip" id="personTooltip" style="display: none;">
+                <div class="tooltip-header" id="tooltipHeader"></div>
+                <div class="tooltip-body" id="tooltipBody"></div>
+            </div>
+
+            <!-- 枪线拖拽提示 -->
+            <div class="gunline-hint" id="gunlineHint" style="display: none;">
+                松开右键固定枪线
+            </div>
+        </div>
+
+        <!-- 右侧属性面板 -->
+        <div class="properties-panel">
+            <h3 class="panel-title">属性 & 设置
+            </h3>
+            
+            <div id="noSelection" class="property-section">
+                <p class="hint-text">点击画布上的元素以编辑属性</p>
+            </div>
+
+            <div id="elementProperties" class="property-section" style="display: none;">
+                <h4>元素属性</h4>
+                
+                <div class="property-group">
+                    <label>类型:</label>
+                    <span id="propType">-</span>
+                </div>
+
+                <div class="property-group">
+                    <label>X 位置:</label>
+                    <input type="number" id="propX" step="1">
+                </div>
+
+                <div class="property-group">
+                    <label>Y 位置:</label>
+                    <input type="number" id="propY" step="1">
+                </div>
+
+                <div class="property-group" id="sizeGroup">
+                    <label>宽度:</label>
+                    <input type="number" id="propWidth" min="10" max="500" step="5">
+                </div>
+
+                <div class="property-group" id="heightGroup">
+                    <label>高度:</label>
+                    <input type="number" id="propHeight" min="10" max="500" step="5">
+                </div>
+
+                <div class="property-group" id="rotationGroup">
+                    <label>旋转角度:</label>
+                    <input type="range" id="propRotation" min="0" max="360" value="0">
+                    <span id="rotationValue">0°</span>
+                </div>
+
+                <!-- 门的开合角度控制 -->
+                <div class="property-group" id="doorAngleGroup" style="display: none;">
+                    <label>门开合角度:</label>
+                    <input type="range" id="propDoorAngle" min="0" max="360" value="0">
+                    <span id="doorAngleValue">0°</span>
+                </div>
+
+                <div class="property-group" id="hingeGroup" style="display: none;">
+                    <label>铰链位置:</label>
+                    <div class="hinge-selector">
+                        <button class="hinge-opt active" data-hinge="left">⬅ 左</button>
+                        <button class="hinge-opt" data-hinge="right">➡ 右</button>
+                        <button class="hinge-opt" data-hinge="top">⬆ 上</button>
+                        <button class="hinge-opt" data-hinge="bottom">⬇ 下</button>
+                    </div>
+                </div>
+
+                <div class="property-group" id="fovGroup">
+                    <label>视野角度 (FOV):</label>
+                    <input type="range" id="propFOV" min="30" max="180" value="120">
+                    <span id="fovValue">120°</span>
+                </div>
+
+                <div class="property-group" id="fovRangeGroup">
+                    <label>视野距离:</label>
+                    <select id="fovRangeType" style="margin-bottom: 5px;">
+                        <option value="finite">有限距离</option>
+                        <option value="infinite" selected>无限 (∞)</option>
+                    </select>
+                    <input type="range" id="fovRange" min="20" max="500" value="80">
+                    <span id="fovRangeValue">80px</span>
+                </div>
+
+                <div class="property-group" id="colorGroup">
+                    <label>颜色:</label>
+                    <input type="color" id="propColor">
+                </div>
+
+                <div class="property-group" id="labelGroup">
+                    <label>标签:</label>
+                    <input type="text" id="propLabel" placeholder="输入标签...">
+                </div>
+
+                <!-- 人员信息模块 -->
+                <div class="property-group" id="personInfoGroup" style="display: none;">
+                    <label>人员信息:</label>
+                    <input type="text" id="propPersonName" placeholder="名称...">
+                    <input type="text" id="propCallSign" placeholder="呼号（仅操作员）..." style="display: none;">
+                    <input type="text" id="propPosition" placeholder="职位（仅操作员）..." style="display: none;">
+                </div>
+
+                <!-- 枪线信息 -->
+                <div class="property-group" id="gunlineGroup" style="display: none;">
+                    <label>枪线:</label>
+                    <button id="deleteGunlineBtn" class="action-btn delete-btn">🗑️ 删除此枪线</button>
+                </div>
+
+                <div class="property-group" id="linkGroup" style="display: none;">
+                    <label>连接目标:</label>
+                    <select id="targetLayerSelect"></select>
+                </div>
+
+                <!-- 快速操作按钮 -->
+                <div class="quick-actions" id="quickActions" style="display: none;">
+                </div>
+
+                <button id="deleteSelectedBtn" class="action-btn delete-btn">删除此元素</button>
+            </div>
+
+            <div class="property-section legend-section">
+                <h4>图例说明</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>我方操作员</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e74c3c;"></div>
+                    <span>敌对目标</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2ecc71;"></div>
+                    <span>人质</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #7f8c8d; border-radius: 2px;"></div>
+                    <span>墙体</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f39c12; border-radius: 2px;"></div>
+                    <span>门</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(52, 152, 219, 0.3); border: 2px solid #3498db;"></div>
+                    <span>视野范围 (120°∞)</span>
+                </div>
+            </div>
+
+            <div class="property-section shortcuts-section">
+                <h4>快捷键</h4>
+                <div class="shortcut-item"><kbd>Ctrl+Z</kbd> 撤销</div>
+                <div class="shortcut-item"><kbd>Ctrl+Y</kbd> 重做</div>
+                <div class="shortcut-item"><kbd>Delete</kbd> 删除选中</div>
+                <div class="shortcut-item"><kbd>Esc</kbd> 取消选择</div>
+                <div class="shortcut-item"><kbd>G</kbd> 切换网格</div>
+                <div class="shortcut-item"><kbd>S</kbd> 切换智能对齐</div>
+                <div class="shortcut-item"><kbd>O</kbd> 切换视野遮挡</div>
+                <div class="shortcut-item"><kbd>D</kbd> 开/关选中的门</div>
+                <div class="shortcut-item"><kbd>M</kbd> 切换实战模式</div>
+                <div class="shortcut-item"><kbd>右键单击人员</kbd> 拖出枪线</div>
+                <div class="shortcut-item"><kbd>Ctrl+S</kbd> 导出图片</div>
+            </div>
+
+            <!-- 全局设置区域 -->
+            <div class="property-section settings-section">
+                <h4>⚙️ 全局设置</h4>
+                
+                <div class="property-group">
+                    <label>操作员大小:</label>
+                    <input type="range" id="globalOperatorSize" min="10" max="30" value="18">
+                    <span id="operatorSizeValue">18px</span>
+                </div>
+
+                <div class="property-group">
+                    <label>应用设置:</label>
+                    <button id="applySettingsBtn" class="action-btn apply-btn">✅ 应用全局设置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 移动端底部操作栏 -->
+    <div class="mobile-bottom-bar" style="display: none;">
+        <button class="mobile-undo-btn" id="mobileUndoBtn" title="撤回">↩️</button>
+        <button class="mobile-redo-btn" id="mobileRedoBtn" title="取消撤回">↪️</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
