@@ -1,0 +1,174 @@
+/* ═══════════════════════════════════════════
+   Splash Screen — CQB Mapping Tool
+   ═══════════════════════════════════════════ */
+
+/* ── PixelBlast background layer ── */
+#pixelBlastBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: auto; /* allows click ripples during splash */
+  transition: opacity 0.7s ease;
+  opacity: 1;
+}
+
+#pixelBlastBg.inactive {
+  pointer-events: none; /* pass clicks through to app after splash */
+}
+
+#pixelBlastBg.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Splash overlay ── */
+#splashScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+  opacity: 1;
+  visibility: visible;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto;
+}
+
+#splashScreen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ── Title ── */
+#splashTitle {
+  font-family: 'Impact', 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-align: center;
+  line-height: 1.1;
+  padding: 0 1rem;
+  color: #D5D5D7;
+}
+
+/* ShinyText 渐变流光（揭示完成后叠加） */
+#splashTitle.shiny-text {
+  background-image: linear-gradient(
+    120deg,
+    #D5D5D7 0%,
+    #D5D5D7 35%,
+    #ffffff 50%,
+    #D5D5D7 65%,
+    #D5D5D7 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shiny-sweep 3s linear infinite;
+}
+
+/* shiny 激活时覆盖子元素颜色 */
+#splashTitle.shiny-text .decrypted-revealed,
+#splashTitle.shiny-text .decrypted-encrypted {
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes shiny-sweep {
+  0%   { background-position: 150% center; }
+  100% { background-position: -50% center; }
+}
+
+/* DecryptedText 揭示阶段 */
+.decrypted-revealed {
+  color: #D5D5D7;
+}
+
+.decrypted-encrypted {
+  color: rgba(240, 240, 250, 0.35);
+  text-shadow: none;
+}
+
+/* ── Subtitle: TextType ── */
+#splashSubtitle {
+  font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  font-weight: 300;
+  color: rgba(240, 240, 250, 0.7);
+  text-align: center;
+  letter-spacing: 1px;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#splashSubtitle.text-type {
+  display: inline-flex;
+  align-items: center;
+}
+
+#splashSubtitle .text-type__content {
+  color: rgba(240, 240, 250, 0.75);
+}
+
+#splashSubtitle .text-type__cursor {
+  color: rgba(240, 240, 250, 0.9);
+  font-weight: 200;
+  margin-left: 0.15rem;
+}
+
+.text-type__cursor--hidden {
+  display: none;
+}
+
+/* ── Skip hint ── */
+#splashSkipHint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(240, 240, 250, 0.35);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto; /* 按钮可点击 */
+  transition: color 0.3s ease;
+  animation: fadeInHint 1.5s ease 2s both;
+}
+
+#splashSkipHint:hover {
+  color: rgba(240, 240, 250, 0.7);
+}
+
+@keyframes fadeInHint {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Main app reveal ── */
+#mainApp {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}

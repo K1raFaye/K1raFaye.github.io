@@ -1,0 +1,180 @@
+================================================================================
+                    CQB Mapping Tool — Update Patch 3.0
+================================================================================
+  发布日期：2026-08-16
+  版本：    Ver 2.0 → Ver 3.0
+  作者：    KiraFaye
+================================================================================
+
+
+--------------------------------------------------------------------------------
+                                更新概要
+--------------------------------------------------------------------------------
+
+  本次更新将项目更名为「CQB Mapping Tool」，引入带 WebGL 流体动态背景的
+  全屏启动动画，全面升级为 shadcn/ui 语义化设计令牌系统，并用内置 SVG / PNG
+  图标替换全部 emoji 按钮。同时新增面板宽度拖拽调整、弹性滑杆等桌面端交互
+  增强，移除了已不再维护的移动端模式，聚焦桌面端体验。
+
+
+--------------------------------------------------------------------------------
+                              ✨ 新增功能
+--------------------------------------------------------------------------------
+
+  【1】全屏启动动画（核心功能）
+
+    打开页面先播放启动动画，点击任意位置进入主界面。
+
+    动画序列：
+      · 步骤1：Ferrofluid WebGL 全屏流体背景立即启动
+      · 步骤2：400ms 后 DecryptedText 逐字解密揭示 "CQB Mapping Tool"
+      · 步骤3：揭示完成后叠加 ShinyText 渐变流光 + TextType 打字 "By KiraFaye"
+      · 步骤4：左键点击任意位置 → 关闭启动画面，进入主界面
+
+    技术细节：
+      · 主界面 (#mainApp) 初始隐藏，动画结束才显示
+      · 应用初始化改为 window.initCQBApp()，由 splash.js 在动画结束时调用
+      · 依赖 Three.js 0.160.0 + GSAP 3.12.5（仅启动动画阶段使用），已本地化至 vendor/，无需联网
+      · 若主界面直接可见（无 splash 包裹）则回退为 DOMContentLoaded 立即初始化
+
+
+  【2】Ferrofluid WebGL 动态背景
+
+    新增 ferrofluid.js，纯 Vanilla JS 的 WebGL 流体模拟背景：
+      · 移植自 React Bits Ferrofluid（原 ogl 实现）
+      · 白墨黑底，向下流动，关闭鼠标交互
+      · 进入主界面后自动淡出并销毁，不占用性能
+
+
+  【3】SVG / PNG 图标系统
+
+    新增 icons/ 目录（共 33 个文件），替换全部 emoji 图标：
+
+      · 工具栏/楼层控制/铰链选项/设置按钮 → 内联 SVG <img> 图标
+        （user / skull / stone / house / cross / arrow_up...）
+      · 激活态按钮图标自动反色（filter: brightness(0)）
+      · 人员单位改用 PNG 图标（user_64px / skull_64px / user_alert_64px）
+      · 新增 loadPersonIcons() 预加载；图标未加载完成时回退为几何符号（● ◆ ▲）
+      · 红色删除按钮图标保持白色（不反色）
+
+
+  【4】面板宽度拖拽调整（Resizable Panels）
+
+    新增 ResizablePanels 类：
+      · 左侧工具栏（180~480px）与右侧属性面板（220~560px）之间提供拖拽手柄
+      · 拖拽时显示 grip 圆点 + 高亮指示线，宽度实时生效并触发画布重排
+      · 宽度记忆到 localStorage（tactical-board-panel-sizes），刷新后恢复
+
+
+  【5】弹性滑杆（Elastic Sliders）
+
+    新增 setupElasticSliders()，所有 range 输入框自动增强：
+      · 包裹为 .range-wrapper，拖拽时滑杆加粗（0.375rem → 0.5rem）
+      · 实时数值气泡（.range-value-tip）跟随滑块显示当前值
+      · 轨道按当前值渐变填充，thumb 缩放 + 光晕反馈
+
+
+  【6】shadcn/ui 设计系统
+
+    完整引入 shadcn/ui 语义化设计令牌：
+      · --background / --foreground / --primary / --secondary
+      · --destructive / --accent / --muted / --ring / --radius
+      · --border / --input / --sidebar-*（侧栏专用令牌）
+      · 原 SpaceX 令牌（--space-black 等）保留为别名兼容
+      · 新增：自定义复选框（隐藏原生 + 动画对勾）
+      · 新增：快捷键 kbd 键帽（Consolas / Cascadia Code + 键帽样式）
+      · 排版切换：Segoe UI / Impact 标题 + Consolas 等宽字体
+
+
+  【7】画布信息 HTML 化
+
+    移除在画布上绘制的蓝色信息框，改为 HTML 覆盖卡片：
+      · 左上角 #canvasAlert（shadcn Alert 风格，毛玻璃 + 半透明）
+      · 标题 = 当前楼层名（#alertLayerName），描述 = 当前场景名（#alertSceneName）
+      · drawLayerInfo() 由画布绘制改为 DOM 更新
+
+
+  【8】实战模式指示器自动淡出
+
+      · 开启实战模式后，顶部指示器 3 秒后自动淡出（combatModeTimer + .fade-out）
+      · 再次切换时重新显示，无需手动关闭
+      · 移除 "-execute!execute!execute!" 字样与 modePulse 呼吸动画
+
+
+--------------------------------------------------------------------------------
+                              🐛 Bug 修复
+--------------------------------------------------------------------------------
+
+  本次更新以功能与界面升级为主，未包含需单独列出的缺陷修复项。
+
+
+--------------------------------------------------------------------------------
+                            📝 其他改进
+--------------------------------------------------------------------------------
+
+  · 项目更名：CQB Simulator → CQB Mapping Tool
+  · 弹窗文案统一为 [OK] / [ERROR] 前缀（原 ✅ / ❌）
+  · Canvas 字体改用 "Segoe UI" / "Helvetica Neue"，等宽字体改用 Consolas / Cascadia Code
+  · 移除移动端专用模式：
+      - toggleMobileMode / 触控手势（handleTouchStart/Move/End）
+      - 移动端底部撤销栏（.mobile-bottom-bar / 移动端切换按钮）
+      - 场景长按操作面板（showSceneActionSheet）
+      - 移动端响应式布局媒体查询（@media max-width:768px 等）
+    → 3.0 聚焦桌面端，请使用桌面浏览器访问
+  · app.js 由约 3592 行精简至约 3379 行（移动端逻辑移除，效果模块拆分为独立文件）
+  · pixel-blast.js 已随包提供（WebGL 像素抖动背景，React Bits PixelBlast 移植），
+    当前版本未接入，保留备用
+  · 启动动画依赖（Three.js / GSAP）由 CDN 改为本地 vendor/ 引用，完全离线可用
+
+
+--------------------------------------------------------------------------------
+                           📁 文件变更清单
+--------------------------------------------------------------------------------
+
+  ┌─────────────────┬──────────────────────────────────────────┐
+  │ 文件             │ 变更说明                                   │
+  ├─────────────────┼──────────────────────────────────────────┤
+  │ index.html       │ 新增启动动画层（#splashScreen）+ mainApp 包裹│
+  │                 │ CDN 引入 Three.js + GSAP                  │
+  │                 │ 全部按钮替换为 SVG 图标                      │
+  │                 │ 新增 #canvasAlert、左右拖拽手柄              │
+  │                 │ 移除移动端切换按钮 / 底部操作栏               │
+  │                 │ 脚本顺序：ferrofluid → decrypted-text →    │
+  │                 │          text-type → splash               │
+  │                 │                                          │
+  │ app.js           │ 移除移动端触控/模式代码（3592→3379行）       │
+  │                 │ 新增 loadPersonIcons / setupElasticSliders│
+  │                 │ 新增 ResizablePanels 类                    │
+  │                 │ init 改为 initCQBApp 导出（供 splash 调用）  │
+  │                 │ 实战模式指示器自动淡出                       │
+  │                 │ drawLayerInfo 改为 DOM 更新                │
+  │                 │ Canvas 字体 / 弹窗文案更新                  │
+  │                 │                                          │
+  │ ui.css          │ shadcn/ui 语义令牌 + sidebar 令牌           │
+  │                 │ 新增图标/弹性滑杆/可调手柄/canvasAlert/kbd/  │
+  │                 │ 自定义checkbox 样式                        │
+  │                 │ 移除移动端媒体查询与底部栏样式                │
+  │                 │                                          │
+  │ splash.css      │ 【新增】启动动画覆盖层样式                    │
+  │ splash.js       │ 【新增】启动动画编排 + 调用 initCQBApp       │
+  │ ferrofluid.js   │ 【新增】WebGL 流体动态背景（Three.js）        │
+  │ decrypted-text.js│ 【新增】文字解密/逐字揭示特效                 │
+  │ text-type.js    │ 【新增】打字机特效（GSAP 光标）               │
+  │ pixel-blast.js  │ 【新增】WebGL 像素抖动背景（备用未接入）       │
+  │ icons/          │ 【新增】30 个 SVG 图标 + 3 个人员 PNG 图标    │
+  │ vendor/         │ 【新增】本地依赖：three.min.js + gsap.min.js │
+  └─────────────────┴──────────────────────────────────────────┘
+
+
+--------------------------------------------------------------------------------
+                              版本信息
+--------------------------------------------------------------------------------
+
+  项目名称：CQB Mapping Tool - 室内近距离战斗模拟器
+  当前版本：Ver 3.0
+  上一个版本：Ver 2.0
+  技术栈：HTML5 Canvas + WebGL(Three.js) + Vanilla JavaScript + CSS3
+  启动动画依赖（Three.js / GSAP）已本地化至 vendor/，无需联网；
+  无需安装任何依赖或服务器环境，浏览器直接打开 index.html 即可使用。
+
+================================================================================
