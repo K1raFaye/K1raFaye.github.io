@@ -1,0 +1,2 @@
+# 行尾统一为 LF（仓库存储）；Windows 检出时按 core.autocrlf 自动转 CRLF
+* text=auto
