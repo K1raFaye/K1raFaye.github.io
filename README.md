@@ -3,6 +3,8 @@
 **by KiraFaye  |  Ver 3.0**
 
 > 纯前端战术标图与 CQB 战术规划工具，打开浏览器即可使用。
+>
+> 使用方式：访问https://k1rafaye.github.io/
 
 ## 技术架构
 
